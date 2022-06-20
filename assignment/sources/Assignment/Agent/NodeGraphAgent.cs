@@ -63,10 +63,11 @@ abstract class NodeGraphAgent : AnimationSprite
 	/**
 	 * Jumps towards the given node immediately
 	 */
-	protected virtual void jumpToNode(Node pNode)
+	protected virtual Node jumpToNode(Node pNode)
 	{
 		x = pNode.location.X;
 		y = pNode.location.Y;
+		return pNode;
 	}
 
 }

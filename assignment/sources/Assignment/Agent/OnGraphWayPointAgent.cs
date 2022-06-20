@@ -1,6 +1,7 @@
 ﻿using GXPEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 /**
  * Very simple example of a nodegraphagent that walks directly to the node you clicked on,
@@ -20,7 +21,8 @@ class OnGraphWayPointAgent : NodeGraphAgent
 		//position ourselves on a random node
 		if (pNodeGraph.nodes.Count > 0)
 		{
-			jumpToNode(pNodeGraph.nodes[Utils.Random(0, pNodeGraph.nodes.Count)]);
+			lastNode = jumpToNode(pNodeGraph.nodes[Utils.Random(0, pNodeGraph.nodes.Count)]);
+			Console.WriteLine(lastNode.id);
 		}
 
 		//listen to nodeclicks
@@ -29,52 +31,53 @@ class OnGraphWayPointAgent : NodeGraphAgent
 
 	protected virtual void onNodeClickHandler(Node pNode)
 	{
-		//foreach (Node connectionNode in pNode.connections) 
-		for (int i = 0; i < pNode.connections.Count; i++)
+		if (lastNode.connections.Contains(pNode))
 		{
+			Console.WriteLine(pNode.id);
 			nodes.Enqueue(pNode);
 			currentNode = nodes.Dequeue();
-			if (currentNode.id == pNode.connections[i].id)
-            {
-				Console.WriteLine("Current Node Id " + currentNode.id + "Connection nodes Ids " +  pNode.connections[i].id);
-				//Console.WriteLine("Targetnode is in connections");
-				if (currentNode != null)
-				{
-					nodes.Enqueue(pNode);
-					lastNode = nodes.Peek();
-				}
-			}
+			lastNode = currentNode;
 		}
+        else
+        {
+			return;
+        }
 		
+		if (currentNode != null)
+		{
+			nodes.Enqueue(pNode);
+			lastNode = nodes.Peek();
+			for (int i = 0; i < currentNode.connections.Count; i++)
+            {
+				if (currentNode.connections.Contains(lastNode))
+                {
+					Console.WriteLine("Good!");
+                }
+                else
+                {
+					Console.WriteLine("Not Good!");
+					nodes.Clear();
+                }
+            }
+		}
 	}
 
 	protected override void Update()
 	{
 
-		
+
 		//no target? Don't walk
-		if (currentNode == null) return;
+		if (currentNode == null)
+			return;
 		//Move towards the target node, if we reached it, clear the target
 		else if (moveTowardsNode(currentNode))
 		{
-			//Console.WriteLine(currentNode.id);
-			//foreach (Node connectionNode in lastNode.connections)
-   //         {
-			//	if (currentNode != connectionNode)
-   //             {
-			//		//Console.WriteLine("Trying To Move Off Graph");
-			//		//nodes.Clear();
-   //             }
-   //         }
-			if (nodes == null)
-			{
-				nodes.Clear();
-			}
-			else if (nodes.Count != 0)
-			{
-				currentNode = nodes.Dequeue();
-				
-			}
+			SetFrame(1);
+
+		}
+		else
+		{
+			
 		}
 	}
 }

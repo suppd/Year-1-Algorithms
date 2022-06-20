@@ -13,7 +13,7 @@ class SufficientDungeon : Dungeon
 	/// remove the 50/50 random thing
 	/// know what the double for loop does on placedoors
 	/// </summary>
-	Random random = new Random();
+	Random random = new Random(5);
 	public readonly Queue<Room> openList = new Queue<Room>();
 
 	public SufficientDungeon(Size pSize) : base(pSize) { }
